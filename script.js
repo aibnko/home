@@ -361,7 +361,7 @@
       modal.classList.add("is-open");
       modal.setAttribute("aria-hidden", "false");
       document.body.classList.add("modal-open");
-      const first = form.querySelector("input");
+      const first = document.getElementById("fName");
       if (first) setTimeout(() => first.focus(), 60);
     }
 
@@ -396,19 +396,9 @@
 
     function validate() {
       let ok = true;
-      const fields = {
-        fName: form.fName, fCompany: form.fCompany,
-        fTitle: form.fTitle, fEmail: form.fEmail
-      };
-      // Required text fields
-      [["fName", "Please enter your full name."],
-       ["fCompany", "Please enter your company name."],
-       ["fTitle", "Please enter your title."]].forEach(([id, msg]) => {
-        const el = document.getElementById(id);
-        if (!el.value.trim()) { setError(el, msg); ok = false; }
-        else setError(el, "");
-      });
-      // Email
+      const nameEl = document.getElementById("fName");
+      if (!nameEl.value.trim()) { setError(nameEl, "Please enter your full name."); ok = false; }
+      else setError(nameEl, "");
       const emailEl = document.getElementById("fEmail");
       const val = emailEl.value.trim();
       const domain = val.split("@")[1] ? val.split("@")[1].toLowerCase() : "";
@@ -441,8 +431,6 @@
       if (!validate()) { setStatus("Please fix the highlighted fields.", "err"); return; }
 
       const fullName = form.fName.value.trim();
-      const company  = form.fCompany.value.trim();
-      const title    = form.fTitle.value.trim();
       const email    = form.fEmail.value.trim();
 
       // Bot caught the honeypot - silently drop.
@@ -450,17 +438,13 @@
 
       const payload = {
         access_key: WEB3FORMS_KEY,
-        subject: "Walkthrough request - " + company,
+        subject: "Walkthrough request - " + fullName,
         from_name: "AIBNKO Landing - Walkthrough Request",
         name: fullName,
         email: email,                 // used as reply-to
-        company: company,
-        title: title,
         message:
           "New walkthrough request from the AIBNKO landing page:\n\n" +
           "Full name: " + fullName + "\n" +
-          "Company: "   + company  + "\n" +
-          "Title: "     + title    + "\n" +
           "Work email: " + email,
         botcheck: ""
       };
