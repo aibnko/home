@@ -179,17 +179,23 @@
 
     const onMeta = () => {
       duration = video.duration || 0;
-      ready = duration > 0;
+      if (!(duration > 0)) return;
+      ready = true;
       // Nudge a frame onto the canvas so we don't sit on the poster only.
       try { video.currentTime = 0.001; } catch (e) {}
-      // Start centered.
-      target = current = duration * 0.5;
-      if (!prefersReduced) loop();
+      // Start centered once; later metadata events only refresh duration.
+      if (target === 0 && current === 0) {
+        target = current = duration * 0.5;
+      }
+      if (!prefersReduced && !rafId) loop();
     };
 
-    if (video.readyState >= 1) onMeta();
+    // Listen first, then poll: a cached video can fire loadedmetadata
+    // before this script runs (or between a readyState check and the listener).
     video.addEventListener("loadedmetadata", onMeta);
+    video.addEventListener("loadeddata", onMeta);
     video.addEventListener("seeked", () => { seeking = false; });
+    onMeta();
 
     // Map pointer X (full viewport) -> timeline. Cursor right => faces forward.
     function setTargetFromX(clientX) {
