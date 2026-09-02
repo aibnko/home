@@ -68,9 +68,11 @@
       video.loop = true;
       video.setAttribute("loop", "");
       video.setAttribute("autoplay", "");
-      tryPlay();
     }
 
+    // Drive play/pause from visibility so a below-the-fold portrait (iPhone
+    // stacks copy → product loop → portrait) never lifts the poster overlay
+    // onto a paused/unpainted frame.
     if ("IntersectionObserver" in window && portrait) {
       const io = new IntersectionObserver((entries) => {
         entries.forEach((en) => {
@@ -80,6 +82,8 @@
         });
       }, { threshold: 0.01 });
       io.observe(portrait);
+    } else if (!prefersReduced) {
+      tryPlay();
     }
   } else if (video) {
     let duration = 0;
