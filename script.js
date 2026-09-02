@@ -13,7 +13,14 @@
      iOS Safari will not paint frames of a paused <video> when JS only
      seeks currentTime, so iPhone / iPad (including iPadOS that reports
      Macintosh + maxTouchPoints, and Chrome on iOS / WebKit) skip the
-     scrub loop and autoplay the portrait instead. */
+     scrub loop and autoplay the portrait instead.
+
+     iOS also budgets muted autoplay to one video. #heroLoop is above the
+     fold on iPhone and used to start first, so #scrubVideo.play() was
+     rejected. IntersectionObserver is not a user gesture, and pausing
+     a below-the-fold portrait after a brief autoplay lifted the overlay
+     onto a black unpainted canvas. The poster overlay stays up until a
+     decoded playing frame exists; the product loop waits for a gesture. */
   function isIOS() {
     const ua = navigator.userAgent || "";
     if (/iPad|iPhone|iPod/.test(ua)) return true;
@@ -22,11 +29,24 @@
     return false;
   }
 
+  function hasPaintedFrame(el) {
+    return !!(
+      el &&
+      !el.paused &&
+      el.readyState >= 2 &&
+      el.videoWidth > 0 &&
+      el.videoHeight > 0
+    );
+  }
+
   const onIOS = isIOS();
   if (onIOS) document.documentElement.classList.add("is-ios");
 
   const video = document.getElementById("scrubVideo");
   const portrait = document.getElementById("portrait");
+  const overlay = document.getElementById("scrubPoster");
+  const heroLoop = document.getElementById("heroLoop");
+  let iosGestureUnlocked = false;
 
   if (video && onIOS) {
     const hint = document.getElementById("scrubHint");
@@ -39,53 +59,114 @@
     video.setAttribute("webkit-playsinline", "");
     video.playsInline = true;
 
-    const overlay = document.getElementById("scrubPoster");
     let revealed = false;
+
+    function showPoster() {
+      revealed = false;
+      if (overlay) overlay.classList.remove("is-ready");
+    }
+
     function revealFrame() {
+      if (prefersReduced) return;
+      if (!hasPaintedFrame(video)) return;
       if (revealed) return;
-      // Wait for a decoded frame so the overlay never lifts onto black.
-      if (video.readyState < 2) return;
-      if (video.paused && video.currentTime === 0) return;
       revealed = true;
       if (overlay) overlay.classList.add("is-ready");
     }
-    video.addEventListener("playing", revealFrame);
-    video.addEventListener("timeupdate", revealFrame);
 
-    function tryPlay() {
-      if (prefersReduced) return;
-      const playPromise = video.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {});
+    function armFrameCallback() {
+      if (typeof video.requestVideoFrameCallback === "function") {
+        video.requestVideoFrameCallback(function () {
+          revealFrame();
+        });
       }
+    }
+
+    video.addEventListener("playing", function () {
+      armFrameCallback();
+      revealFrame();
+    });
+    video.addEventListener("timeupdate", revealFrame);
+    video.addEventListener("loadeddata", revealFrame);
+    video.addEventListener("pause", function () {
+      if (!hasPaintedFrame(video)) showPoster();
+    });
+    video.addEventListener("emptied", showPoster);
+    video.addEventListener("error", showPoster);
+
+    function tryPlayPortrait() {
+      if (prefersReduced) return;
+      armFrameCallback();
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.then === "function") {
+        playPromise.then(function () {
+          armFrameCallback();
+          revealFrame();
+        }).catch(function () {
+          showPoster();
+        });
+      }
+    }
+
+    function tryPlayHeroAfterGesture() {
+      if (!heroLoop || prefersReduced || !iosGestureUnlocked) return;
+      if (portrait) {
+        const r = portrait.getBoundingClientRect();
+        const visibleH = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+        if (r.height > 0 && visibleH / r.height > 0.25) {
+          tryPlayPortrait();
+          return;
+        }
+      }
+      heroLoop.muted = true;
+      heroLoop.defaultMuted = true;
+      const playPromise = heroLoop.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    }
+
+    function onUnlock() {
+      if (prefersReduced) return;
+      iosGestureUnlocked = true;
+      tryPlayPortrait();
+      tryPlayHeroAfterGesture();
     }
 
     if (prefersReduced) {
       video.loop = false;
       video.removeAttribute("loop");
+      video.removeAttribute("autoplay");
       video.pause();
+      showPoster();
     } else {
       video.loop = true;
       video.setAttribute("loop", "");
       video.setAttribute("autoplay", "");
+      // Claim the single muted-autoplay slot immediately, even off-screen.
+      tryPlayPortrait();
     }
 
-    // Drive play/pause from visibility so a below-the-fold portrait (iPhone
-    // stacks copy → product loop → portrait) never lifts the poster overlay
-    // onto a paused/unpainted frame.
+    ["touchstart", "touchend", "pointerdown", "click"].forEach(function (ev) {
+      document.addEventListener(ev, onUnlock, { passive: true });
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) tryPlayPortrait();
+    });
+
+    // Play when the portrait approaches the viewport. Do not pause it:
+    // pause() before a painted frame is what produced the black rectangle.
     if ("IntersectionObserver" in window && portrait) {
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((en) => {
+      const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
           if (prefersReduced) return;
-          if (en.isIntersecting) tryPlay();
-          else video.pause();
+          if (en.isIntersecting) tryPlayPortrait();
         });
-      }, { threshold: 0.01 });
+      }, { threshold: 0.01, rootMargin: "240px 0px" });
       io.observe(portrait);
-    } else if (!prefersReduced) {
-      tryPlay();
     }
   } else if (video) {
+    if (!prefersReduced) document.documentElement.classList.add("is-scrub");
     let duration = 0;
     let target = 0;      // desired time (driven by the mouse)
     let current = 0;     // smoothed time actually shown
@@ -137,12 +218,7 @@
       }
     }
 
-    // Graceful fallback: if reduced-motion is on, just gently loop the clip.
-    if (prefersReduced) {
-      video.setAttribute("loop", "");
-      video.muted = true;
-      video.play().catch(() => {});
-    }
+    // Reduced motion: keep the static poster. Do not autoplay.
 
     // Hide the "move your cursor" hint after the first real interaction.
     const hint = document.getElementById("scrubHint");
@@ -167,13 +243,20 @@
   }
 
   /* ---------- 1b. PRODUCT DEMO LOOP ---------- */
-  const heroLoop = document.getElementById("heroLoop");
   if (heroLoop) {
     heroLoop.muted = true;
     heroLoop.defaultMuted = true;
-    const tryPlay = () => {
+    heroLoop.playsInline = true;
+    const tryPlayHero = () => {
       if (prefersReduced) {
         heroLoop.pause();
+        return;
+      }
+      if (onIOS) {
+        // iOS muted-autoplay is a single slot. The portrait claims it.
+        // After a tap/touch, onUnlock() starts the product loop.
+        heroLoop.removeAttribute("autoplay");
+        heroLoop.autoplay = false;
         return;
       }
       const playPromise = heroLoop.play();
@@ -181,11 +264,13 @@
         playPromise.catch(() => {});
       }
     };
-    tryPlay();
-    heroLoop.addEventListener("canplay", tryPlay, { once: true });
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) tryPlay();
-    });
+    tryPlayHero();
+    if (!onIOS) {
+      heroLoop.addEventListener("canplay", tryPlayHero, { once: true });
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) tryPlayHero();
+      });
+    }
   }
 
   /* ---------- 2. NAV SCROLL STATE ---------- */

@@ -61,7 +61,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <script>
+    (function () {
+      var ua = navigator.userAgent || "";
+      if (/iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) {
+        document.documentElement.classList.add("is-ios");
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=8" />
 </head>
 <body>
   <!-- ================= NAV ================= -->
@@ -109,18 +117,35 @@
             <video
               id="scrubVideo"
               class="portrait__video"
-              src="aibnko-scrub.mp4?v=2"
-              poster="poster.jpg?v=2"
+              src="aibnko-scrub.mp4?v=3"
+              poster="poster.jpg?v=3"
               muted
               playsinline
               webkit-playsinline
               preload="auto"
               disablepictureinpicture
             ></video>
+            <script>
+              (function () {
+                var v = document.getElementById("scrubVideo");
+                if (!v || !document.documentElement.classList.contains("is-ios")) return;
+                if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+                v.muted = true;
+                v.defaultMuted = true;
+                v.setAttribute("muted", "");
+                v.setAttribute("playsinline", "");
+                v.setAttribute("webkit-playsinline", "");
+                v.playsInline = true;
+                v.loop = true;
+                v.autoplay = true;
+                v.setAttribute("loop", "");
+                v.setAttribute("autoplay", "");
+              })();
+            </script>
             <img
               class="portrait__poster"
               id="scrubPoster"
-              src="poster.jpg?v=2"
+              src="poster.jpg?v=3"
               alt=""
               aria-hidden="true"
             />
@@ -156,6 +181,15 @@
               controlslist="nodownload nofullscreen noremoteplayback"
               aria-label="AIBNKO product walkthrough"
             ></video>
+            <script>
+              (function () {
+                var v = document.getElementById("heroLoop");
+                if (!v || !document.documentElement.classList.contains("is-ios")) return;
+                v.removeAttribute("autoplay");
+                v.autoplay = false;
+                try { v.pause(); } catch (e) {}
+              })();
+            </script>
           </div>
         </div>
       </div>
@@ -403,7 +437,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=8"></script>
   <script src="analytics.js"></script>
 </body>
 </html>

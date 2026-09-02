@@ -188,11 +188,11 @@ strong { color: var(--ink); font-weight: 600; }
   width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; display: block;
   filter: contrast(1.04) saturate(.96);
 }
-/* iOS: hold poster.jpg over the video until a real frame paints (Safari
-   drops the poster as soon as JS seeks a paused <video>). Hidden on
-   desktop/Android so the mouse-scrub path is unchanged. */
+/* Hold poster.jpg over the <video> until a playback path is ready.
+   Safari drops the native poster (and can paint black) as soon as the
+   element buffers or JS touches currentTime. The overlay is the face. */
 .portrait__poster {
-  display: none;
+  display: block;
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover; object-position: 50% 22%;
@@ -200,10 +200,16 @@ strong { color: var(--ink); font-weight: 600; }
   z-index: 1;
   filter: contrast(1.04) saturate(.96);
 }
-html.is-ios .portrait__poster { display: block; }
+/* Desktop/Android mouse-scrub paints frames on a paused video. */
+html.is-scrub .portrait__poster { display: none; }
+/* iOS: lift only after a decoded, playing frame exists. */
 html.is-ios .portrait__poster.is-ready { display: none; }
 html.is-ios #scrubHint { display: none; }
 html.is-ios .portrait { cursor: default; }
+@media (prefers-reduced-motion: reduce) {
+  html.is-ios .portrait__poster,
+  html.is-ios .portrait__poster.is-ready { display: block; }
+}
 /* scan-line accent */
 .portrait__scan {
   position: absolute; inset: 0; pointer-events: none; mix-blend-mode: overlay;
