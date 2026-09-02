@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AIBNKO</title>
+  <title>Cover the whole book without waiting on a desk | AIBNKO</title>
   <link rel="icon" type="image/png" href="favicon.png">
-  <meta name="description" content="AI-driven investment research that scales beyond human capacity. An autonomous, multi-agentic equity research framework covering 10,000+ global stocks." />
+  <meta name="description" content="Cover the whole book without waiting on a desk. Ingest, model, and bear-case review in one workspace. 10,000+ global stocks, 24/7. Built for Heads of Research." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=6" />
 </head>
 <body>
   <!-- ================= NAV ================= -->
@@ -18,10 +18,10 @@
       <img src="Logo.png" alt="AIBNKO" class="nav__logo" />
     </a>
     <nav class="nav__links" aria-label="Primary">
-      <a href="#problem">Problem</a>
-      <a href="#solution">Solution</a>
-      <a href="#framework">Framework</a>
-      <a href="#edge">Edge</a>
+      <a href="#why-aibnko">Why AIBNKO</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#alternatives">vs alternatives</a>
+      <button type="button" data-open-demo>Book a walkthrough</button>
     </nav>
     <a class="btn btn--login" href="https://app.aibnko.com">
       Login
@@ -31,27 +31,27 @@
   <!-- ================= HERO ================= -->
   <main id="top">
     <section class="hero" id="hero">
-      <div class="hero__grid">
+      <div class="hero__layout">
         <div class="hero__copy">
           <span class="eyebrow"><span class="eyebrow__dot"></span> Autonomous Equity Research · Multi-Agentic AI</span>
           <h1 class="hero__title">
-            AI-driven investment research that
-            <span class="hero__title-accent"> scales beyond human capacity</span>
+            Cover the whole book
+            <span class="hero__title-accent"> without waiting on a desk.</span>
           </h1>
           <p class="hero__sub">
-            AIBNKO replaces static spreadsheet models with a dynamic, multi-agentic
-            framework that operates with the precision of a high-performance investment
-            committee - covering <strong>10,000+ global stocks</strong>, 24/7, free of cognitive bias.
+            Ingest, model, and bear-case review in one workspace.
+            <strong>10,000+ global stocks</strong>, 24/7. Built for Heads of Research.
           </p>
           <div class="hero__cta">
             <button type="button" class="btn btn--primary" id="demoBtn" data-open-demo>
-              Request a demo
+              Book a live walkthrough
             </button>
-            <a class="btn btn--ghost" href="#solution">See how it works</a>
+            <a class="btn btn--ghost" href="#how-it-works">See how it works</a>
           </div>
+          <p class="hero__proof">Distributed on FactSet. 10,000+ names. Human desks take 24-48 hours to update.</p>
         </div>
 
-        <!-- Video scrubbing portrait -->
+        <!-- Video scrubbing portrait - must remain in the hero -->
         <div class="hero__media">
           <div class="portrait" id="portrait">
             <video
@@ -79,25 +79,42 @@
             Move your cursor across the portrait.
           </p>
         </div>
+
+        <!-- Product demo loop: additional to the portrait, not a replacement -->
+        <div class="hero__product">
+          <div class="product-window">
+            <video
+              id="heroLoop"
+              class="product-window__video"
+              src="aibnko-hero-loop.mp4"
+              autoplay
+              muted
+              playsinline
+              loop
+              preload="metadata"
+              disablepictureinpicture
+              controlslist="nodownload nofullscreen noremoteplayback"
+              aria-label="AIBNKO product walkthrough"
+            ></video>
           </div>
         </div>
       </div>
 
-      <!-- KPI strip -->
+      <!-- KPI strip: final figures in markup for no-JS / first paint / crawlers -->
       <div class="kpis" id="kpis">
-        <div class="kpi"><span class="kpi__num" data-target="20" data-suffix="x">0x</span><span class="kpi__label">Faster response to market events</span></div>
-        <div class="kpi"><span class="kpi__num" data-target="10000" data-prefix="+" data-format="comma">0</span><span class="kpi__label">Global stocks covered</span></div>
-        <div class="kpi"><span class="kpi__num" data-target="85" data-suffix="%">0%</span><span class="kpi__label">Time saved vs. manual analysis</span></div>
-        <div class="kpi"><span class="kpi__num" data-target="100" data-suffix="%">0%</span><span class="kpi__label">Immunity to cognitive bias</span></div>
+        <div class="kpi"><span class="kpi__num" data-target="20" data-suffix="x">20x</span><span class="kpi__label">Faster response to market events</span></div>
+        <div class="kpi"><span class="kpi__num" data-target="10000" data-suffix="+" data-format="comma">10,000+</span><span class="kpi__label">Global stocks covered</span></div>
+        <div class="kpi"><span class="kpi__num" data-target="85" data-suffix="%">85%</span><span class="kpi__label">Time saved vs. manual analysis</span></div>
+        <div class="kpi"><span class="kpi__num" data-static="FactSet">FactSet</span><span class="kpi__label">Institutional distribution</span></div>
         <div class="kpi"><span class="kpi__num" data-static="24/7">24/7</span><span class="kpi__label">Continuous global monitoring</span></div>
         <div class="kpi"><span class="kpi__num" data-static="1.2M+">1.2M+</span><span class="kpi__label">Data points / sec</span></div>
       </div>
     </section>
 
-    <!-- ================= PROBLEM ================= -->
-    <section class="section section--problem" id="problem">
+    <!-- ================= WHY AIBNKO ================= -->
+    <section class="section section--problem" id="why-aibnko">
       <div class="section__head">
-        <span class="section__tag">The Problem</span>
+        <span class="section__tag">Why AIBNKO</span>
         <h2 class="section__title">Legacy research wasn't built for the speed of modern markets.</h2>
       </div>
       <div class="cards cards--4">
@@ -114,7 +131,7 @@
         <article class="card">
           <span class="card__index">03</span>
           <h3>Slowness</h3>
-          <p>The average time to update a recommendation after a material event is 24–48 hours.</p>
+          <p>The average time to update a recommendation after a material event is 24-48 hours.</p>
         </article>
         <article class="card">
           <span class="card__index">04</span>
@@ -124,11 +141,11 @@
       </div>
     </section>
 
-    <!-- ================= SOLUTION ================= -->
-    <section class="section section--solution" id="solution">
+    <!-- ================= HOW IT WORKS ================= -->
+    <section class="section section--solution" id="how-it-works">
       <div class="section__head">
-        <span class="section__tag">The Solution</span>
-        <h2 class="section__title">An autonomous agentic system that replaces the research team.</h2>
+        <span class="section__tag">How it works</span>
+        <h2 class="section__title">An autonomous system that works like an investment committee.</h2>
         <p class="section__lead">
           A completely independent framework that goes beyond monitoring global markets and
           summarizing financial statements - it learns and improves continuously from real-time events.
@@ -191,10 +208,10 @@
       </div>
     </section>
 
-    <!-- ================= EDGE / BENCHMARK ================= -->
-    <section class="section section--edge" id="edge">
+    <!-- ================= VS ALTERNATIVES ================= -->
+    <section class="section section--edge" id="alternatives">
       <div class="section__head">
-        <span class="section__tag">Competitive Edge</span>
+        <span class="section__tag">vs alternatives</span>
         <h2 class="section__title">Where AIBNKO outperforms the alternatives.</h2>
       </div>
       <div class="table-wrap">
@@ -221,7 +238,7 @@
               <td class="bench__hl"><span class="dot dot--full"></span>Real-time refresh</td>
               <td><span class="dot dot--low"></span>Static</td>
               <td><span class="dot dot--low"></span>None</td>
-              <td><span class="dot dot--low"></span>24–48h</td>
+              <td><span class="dot dot--low"></span>24-48h</td>
             </tr>
             <tr>
               <td>Closed-loop monitoring</td>
@@ -259,13 +276,14 @@
     <!-- ================= CLOSING CTA ================= -->
     <section class="cta">
       <div class="cta__inner">
+        <p class="cta__kicker">Company point of view</p>
         <p class="cta__quote">
-          “AIBNKO is not just a replacement for an analyst team; it is the
+          “AIBNKO is the
           <em>investment committee of the new era</em> - FASTER, SMARTER, and UNBIASED.”
         </p>
-        <p class="cta__attrib">Zvika Fine, CPA</p>
+        <p class="cta__attrib">Zvika Fine, CPA, Founder</p>
         <button type="button" class="btn btn--primary btn--xl" data-open-demo>
-          Request a demo
+          Book a live walkthrough
         </button>
       </div>
     </section>
@@ -291,9 +309,9 @@
       <button type="button" class="modal__close" aria-label="Close" data-close-demo>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
-      <span class="modal__tag">Request a demo</span>
-      <h2 class="modal__title" id="demoTitle">See AIBNKO in action.</h2>
-      <p class="modal__sub" id="demoSub">Tell us a little about you and our team will be in touch to arrange a walkthrough.</p>
+      <span class="modal__tag">Book a walkthrough</span>
+      <h2 class="modal__title" id="demoTitle">See a name from your book.</h2>
+      <p class="modal__sub" id="demoSub">Tell us who you are. We will run a walkthrough on a ticker from your coverage.</p>
 
       <form class="demo-form" id="demoForm" novalidate>
         <!-- Honeypot: hidden from humans, catches bots -->
@@ -319,13 +337,12 @@
           <span class="field__err" data-err-for="fEmail"></span>
           <span class="field__hint">Please use your organization email - personal addresses (Gmail, Yahoo, etc.) are not accepted.</span>
         </div>
-        <button type="submit" class="btn btn--primary btn--xl demo-form__submit">Send request</button>
+        <button type="submit" class="btn btn--primary btn--xl demo-form__submit">Book my walkthrough</button>
         <p class="demo-form__status" id="demoStatus" role="status" aria-live="polite"></p>
       </form>
     </div>
   </div>
 
-  <script src="script.js?v=5"></script>
+  <script src="script.js?v=6"></script>
 </body>
 </html>
-

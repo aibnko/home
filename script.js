@@ -94,6 +94,28 @@
     }
   }
 
+  /* ---------- 1b. PRODUCT DEMO LOOP ---------- */
+  const heroLoop = document.getElementById("heroLoop");
+  if (heroLoop) {
+    heroLoop.muted = true;
+    heroLoop.defaultMuted = true;
+    const tryPlay = () => {
+      if (prefersReduced) {
+        heroLoop.pause();
+        return;
+      }
+      const playPromise = heroLoop.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    };
+    tryPlay();
+    heroLoop.addEventListener("canplay", tryPlay, { once: true });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) tryPlay();
+    });
+  }
+
   /* ---------- 2. NAV SCROLL STATE ---------- */
   const nav = document.getElementById("nav");
   if (nav) {
@@ -156,9 +178,9 @@
   if (modal && form) {
     const dialog = modal.querySelector(".modal__dialog");
     const statusEl = document.getElementById("demoStatus");
-    const SALES_EMAIL = "sales@aibnko.com";
+    const RESEARCH_EMAIL = "research@aibnko.com";
 
-    // Common personal / free mailbox providers — these are rejected so only
+    // Common personal / free mailbox providers - these are rejected so only
     // organization addresses get through.
     const FREE_DOMAINS = new Set([
       "gmail.com", "googlemail.com", "yahoo.com", "yahoo.co.uk", "yahoo.co.in",
@@ -230,7 +252,7 @@
       if (!val) { setError(emailEl, "Please enter your work email."); ok = false; }
       else if (!EMAIL_RE.test(val)) { setError(emailEl, "Please enter a valid email address."); ok = false; }
       else if (FREE_DOMAINS.has(domain)) {
-        setError(emailEl, "Please use your organization email - personal addresses aren’t accepted.");
+        setError(emailEl, "Please use your organization email - personal addresses aren't accepted.");
         ok = false;
       } else setError(emailEl, "");
       return ok;
@@ -260,19 +282,19 @@
       const title    = form.fTitle.value.trim();
       const email    = form.fEmail.value.trim();
 
-      // Bot caught the honeypot — silently drop.
+      // Bot caught the honeypot - silently drop.
       if (form.botcheck && form.botcheck.checked) return;
 
       const payload = {
         access_key: WEB3FORMS_KEY,
-        subject: "Demo request — " + company,
-        from_name: "AIBNKO Landing — Demo Request",
+        subject: "Walkthrough request - " + company,
+        from_name: "AIBNKO Landing - Walkthrough Request",
         name: fullName,
         email: email,                 // used as reply-to
         company: company,
         title: title,
         message:
-          "New demo request from the AIBNKO landing page:\n\n" +
+          "New walkthrough request from the AIBNKO landing page:\n\n" +
           "Full name: " + fullName + "\n" +
           "Company: "   + company  + "\n" +
           "Title: "     + title    + "\n" +
@@ -282,8 +304,8 @@
 
       submitBtn.disabled = true;
       const originalLabel = submitBtn.textContent;
-      submitBtn.textContent = "Sending…";
-      setStatus("Sending your request…");
+      submitBtn.textContent = "Sending...";
+      setStatus("Sending your request...");
 
       try {
         const res = await fetch("https://api.web3forms.com/submit", {
@@ -298,10 +320,10 @@
           form.reset();
           setTimeout(closeModal, 2600);
         } else {
-          setStatus((data && data.message) ? data.message : "Something went wrong. Please email " + SALES_EMAIL + " directly.", "err");
+          setStatus((data && data.message) ? data.message : "Something went wrong. Please email " + RESEARCH_EMAIL + " directly.", "err");
         }
       } catch (err) {
-        setStatus("Network error - please try again, or email " + SALES_EMAIL + " directly.", "err");
+        setStatus("Network error - please try again, or email " + RESEARCH_EMAIL + " directly.", "err");
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalLabel;
