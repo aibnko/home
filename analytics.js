@@ -1,12 +1,12 @@
 /* ============================================================
-   AIBNKO - gated GA4. No-op until a G- measurement ID is set.
-   Paste a real ID into MEASUREMENT_ID or set
-   window.AIBNKO_GA_MEASUREMENT_ID before this file loads.
+   AIBNKO - gated GA4. Loads gtag when MEASUREMENT_ID (or
+   window.AIBNKO_GA_MEASUREMENT_ID) is a non-empty G- ID.
+   A blank MEASUREMENT_ID remains a no-op.
    ============================================================ */
 (function () {
   "use strict";
 
-  var MEASUREMENT_ID = "";
+  var MEASUREMENT_ID = "G-2XWEQQZ8V2";
 
   var fromWindow =
     typeof window.AIBNKO_GA_MEASUREMENT_ID === "string"
