@@ -15,8 +15,8 @@
      Macintosh + maxTouchPoints, and Chrome on iOS / WebKit) skip the
      scrub loop and autoplay the portrait instead.
 
-     iOS also budgets muted autoplay to one video. #heroLoop is above the
-     fold on iPhone and used to start first, so #scrubVideo.play() was
+     iOS also budgets muted autoplay to one video. #heroLoop used to stack
+     above the portrait on phones and start first, so #scrubVideo.play() was
      rejected. IntersectionObserver is not a user gesture, and pausing
      a below-the-fold portrait after a brief autoplay lifted the overlay
      onto a black unpainted canvas. The poster overlay stays up until a
