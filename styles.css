@@ -85,18 +85,25 @@ strong { color: var(--ink); font-weight: 600; }
 .nav__logo { height: 30px; width: auto; display: block; }
 
 .nav__links {
-  display: flex; gap: 2rem; margin-left: auto; margin-right: 1.5rem;
+  display: flex; gap: 1.45rem; margin-left: auto; margin-right: 1.5rem;
+  align-items: center;
 }
-.nav__links a {
-  font-size: .9rem; color: var(--ink-dim); position: relative;
+.nav__links a,
+.nav__links button {
+  font-size: .88rem; color: var(--ink-dim); position: relative;
   transition: color .3s var(--ease);
+  background: none; border: 0; padding: 0; font-family: inherit;
+  cursor: pointer; white-space: nowrap;
 }
-.nav__links a::after {
+.nav__links a::after,
+.nav__links button::after {
   content: ""; position: absolute; left: 0; bottom: -4px; height: 1px; width: 0;
   background: var(--ink); transition: width .3s var(--ease);
 }
-.nav__links a:hover { color: var(--ink); }
-.nav__links a:hover::after { width: 100%; }
+.nav__links a:hover,
+.nav__links button:hover { color: var(--ink); }
+.nav__links a:hover::after,
+.nav__links button:hover::after { width: 100%; }
 
 /* ===================== HERO ===================== */
 .hero {
@@ -104,10 +111,19 @@ strong { color: var(--ink); font-weight: 600; }
   max-width: var(--maxw); margin: 0 auto;
   padding: clamp(2.5rem, 7vw, 5.5rem) clamp(1.1rem, 4vw, 2.4rem) 2rem;
 }
-.hero__grid {
-  display: grid; grid-template-columns: 1.05fr .95fr;
-  gap: clamp(2rem, 5vw, 4.5rem); align-items: center;
+.hero__layout {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  grid-template-areas:
+    "copy media"
+    "product product";
+  column-gap: clamp(2rem, 5vw, 4.5rem);
+  row-gap: clamp(1.8rem, 4vw, 3.2rem);
+  align-items: center;
 }
+.hero__copy { grid-area: copy; }
+.hero__media { grid-area: media; }
+.hero__product { grid-area: product; align-self: stretch; }
 
 .eyebrow {
   display: inline-flex; align-items: center; gap: .55rem;
@@ -141,7 +157,11 @@ strong { color: var(--ink); font-weight: 600; }
 .hero__sub {
   font-size: 1.08rem; color: var(--ink-dim); max-width: 33rem; margin-bottom: 2rem;
 }
-.hero__cta { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.6rem; }
+.hero__cta { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
+.hero__proof {
+  font-size: .88rem; color: var(--ink-dim); max-width: 33rem;
+  line-height: 1.45;
+}
 
 .hero__hint {
   display: flex; align-items: center; justify-content: center; gap: .5rem;
@@ -201,6 +221,28 @@ strong { color: var(--ink); font-weight: 600; }
   box-shadow: 0 0 8px #3ef08a; animation: pulse-dot 1.6s infinite;
 }
 @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ---------- Product demo window (Aleph-style, additional to portrait) ---------- */
+.product-window {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #0d0d0f;
+  box-shadow:
+    0 40px 90px -36px rgba(0,0,0,.88),
+    0 18px 40px -24px rgba(0,0,0,.55),
+    inset 0 0 0 1px rgba(255,255,255,.05);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.product-window__video {
+  width: 100%; height: 100%;
+  display: block; object-fit: cover;
+  pointer-events: none;
+}
 
 /* ===================== KPIs ===================== */
 .kpis {
@@ -339,6 +381,10 @@ strong { color: var(--ink); font-weight: 600; }
   padding: clamp(4rem, 10vw, 7rem) clamp(1.1rem, 4vw, 2.4rem);
   text-align: center;
 }
+.cta__kicker {
+  font-size: .74rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 1rem;
+}
 .cta__quote {
   font-family: var(--serif); font-size: clamp(1.6rem, 3.6vw, 2.6rem);
   line-height: 1.25; font-weight: 400; letter-spacing: -0.01em; color: #fff;
@@ -368,9 +414,20 @@ strong { color: var(--ink); font-weight: 600; }
 .reveal.is-in { opacity: 1; transform: none; }
 
 /* ===================== RESPONSIVE ===================== */
+@media (max-width: 1080px) {
+  .nav__links { display: none; }
+}
 @media (max-width: 980px) {
-  .hero__grid { grid-template-columns: 1fr; }
-  .hero__media { order: -1; }
+  /* Copy first, then product loop, then portrait - do not pull the portrait above the H1 */
+  .hero__layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "product"
+      "media";
+    row-gap: 1.6rem;
+  }
+  .hero__media { justify-self: center; width: 100%; }
   .portrait { max-width: 380px; }
   .kpis { grid-template-columns: repeat(3, 1fr); }
   .cards--4 { grid-template-columns: repeat(2, 1fr); }
@@ -379,10 +436,10 @@ strong { color: var(--ink); font-weight: 600; }
   .pipeline__arrow { transform: rotate(90deg); padding: .2rem 0; }
 }
 @media (max-width: 620px) {
-  .nav__links { display: none; }
   .kpis { grid-template-columns: repeat(2, 1fr); }
   .cards--4 { grid-template-columns: 1fr; }
   .footer { flex-direction: column; align-items: flex-start; }
+  .portrait { max-width: 320px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; scroll-behavior: auto; }
@@ -453,7 +510,7 @@ strong { color: var(--ink); font-weight: 600; }
 
 body.modal-open { overflow: hidden; }
 
-/* Honeypot — visually & programmatically hidden from real users */
+/* Honeypot - visually & programmatically hidden from real users */
 .hp-field {
   position: absolute !important; width: 1px; height: 1px;
   padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0);
