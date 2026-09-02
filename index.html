@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
   <!-- ================= NAV ================= -->
@@ -61,9 +61,17 @@
               poster="poster.jpg?v=2"
               muted
               playsinline
+              webkit-playsinline
               preload="auto"
               disablepictureinpicture
             ></video>
+            <img
+              class="portrait__poster"
+              id="scrubPoster"
+              src="poster.jpg?v=2"
+              alt=""
+              aria-hidden="true"
+            />
             <div class="portrait__scan" aria-hidden="true"></div>
             <div class="portrait__corner portrait__corner--tl"></div>
             <div class="portrait__corner portrait__corner--tr"></div>
@@ -343,6 +351,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=6"></script>
+  <script src="script.js?v=7"></script>
 </body>
 </html>

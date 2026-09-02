@@ -9,11 +9,79 @@
   /* ---------- 1. VIDEO MOUSE-SCRUBBING ----------
      Maps the cursor's horizontal position to the video timeline so the
      subject's head turns to follow the user. The clip is re-encoded as
-     all-intra (every frame a keyframe) so arbitrary seeks are instant. */
+     all-intra (every frame a keyframe) so arbitrary seeks are instant.
+     iOS Safari will not paint frames of a paused <video> when JS only
+     seeks currentTime, so iPhone / iPad (including iPadOS that reports
+     Macintosh + maxTouchPoints, and Chrome on iOS / WebKit) skip the
+     scrub loop and autoplay the portrait instead. */
+  function isIOS() {
+    const ua = navigator.userAgent || "";
+    if (/iPad|iPhone|iPod/.test(ua)) return true;
+    // iPadOS 13+: Safari and Chrome report as Macintosh.
+    if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return true;
+    return false;
+  }
+
+  const onIOS = isIOS();
+  if (onIOS) document.documentElement.classList.add("is-ios");
+
   const video = document.getElementById("scrubVideo");
   const portrait = document.getElementById("portrait");
 
-  if (video) {
+  if (video && onIOS) {
+    const hint = document.getElementById("scrubHint");
+    if (hint) hint.hidden = true;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.playsInline = true;
+
+    const overlay = document.getElementById("scrubPoster");
+    let revealed = false;
+    function revealFrame() {
+      if (revealed) return;
+      // Wait for a decoded frame so the overlay never lifts onto black.
+      if (video.readyState < 2) return;
+      if (video.paused && video.currentTime === 0) return;
+      revealed = true;
+      if (overlay) overlay.classList.add("is-ready");
+    }
+    video.addEventListener("playing", revealFrame);
+    video.addEventListener("timeupdate", revealFrame);
+
+    function tryPlay() {
+      if (prefersReduced) return;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    }
+
+    if (prefersReduced) {
+      video.loop = false;
+      video.removeAttribute("loop");
+      video.pause();
+    } else {
+      video.loop = true;
+      video.setAttribute("loop", "");
+      video.setAttribute("autoplay", "");
+      tryPlay();
+    }
+
+    if ("IntersectionObserver" in window && portrait) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (prefersReduced) return;
+          if (en.isIntersecting) tryPlay();
+          else video.pause();
+        });
+      }, { threshold: 0.01 });
+      io.observe(portrait);
+    }
+  } else if (video) {
     let duration = 0;
     let target = 0;      // desired time (driven by the mouse)
     let current = 0;     // smoothed time actually shown
