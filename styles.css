@@ -149,8 +149,8 @@ strong { color: var(--ink); font-weight: 600; }
   margin-bottom: 1.4rem;
 }
 .hero__title-accent {
-  font-family: var(--serif); font-weight: 400; font-style: italic;
-  letter-spacing: 0; color: #fff;
+  font-family: inherit; font-weight: inherit; font-style: inherit;
+  color: #fff;
   background: linear-gradient(180deg, #fff 30%, #b8b8b6);
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
