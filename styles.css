@@ -441,13 +441,13 @@ html.is-ios .portrait { cursor: default; }
   .nav__links { display: none; }
 }
 @media (max-width: 980px) {
-  /* Copy first, then product loop, then portrait - do not pull the portrait above the H1 */
+  /* Copy first, then portrait, then product loop - do not pull the portrait above the H1 */
   .hero__layout {
     grid-template-columns: 1fr;
     grid-template-areas:
       "copy"
-      "product"
-      "media";
+      "media"
+      "product";
     row-gap: 1.6rem;
   }
   .hero__media { justify-self: center; width: 100%; }
