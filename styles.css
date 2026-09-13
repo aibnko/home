@@ -406,10 +406,6 @@ html.is-ios .portrait { cursor: default; }
   padding: clamp(4rem, 10vw, 7rem) clamp(1.1rem, 4vw, 2.4rem);
   text-align: center;
 }
-.cta__kicker {
-  font-size: .74rem; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--ink-faint); margin-bottom: 1rem;
-}
 .cta__quote {
   font-family: var(--serif); font-size: clamp(1.6rem, 3.6vw, 2.6rem);
   line-height: 1.25; font-weight: 400; letter-spacing: -0.01em; color: #fff;
