@@ -158,11 +158,7 @@ strong { color: var(--ink); font-weight: 600; }
   font-size: 1.08rem; color: var(--ink-dim); max-width: 33rem; margin-bottom: 2rem;
   font-weight: 400;
 }
-.hero__cta { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
-.hero__proof {
-  font-size: .88rem; color: var(--ink-dim); max-width: 33rem;
-  line-height: 1.45;
-}
+.hero__cta { display: flex; gap: .8rem; flex-wrap: wrap; }
 
 .hero__hint {
   display: flex; align-items: center; justify-content: center; gap: .5rem;
