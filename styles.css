@@ -155,11 +155,8 @@ strong { color: var(--ink); font-weight: 600; }
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
 .hero__sub {
-  font-size: 1.08rem; color: var(--ink-dim); max-width: 33rem; margin-bottom: .85rem;
-}
-.hero__contrast {
-  font-size: 1.08rem; color: var(--ink); max-width: 33rem; margin-bottom: 2rem;
-  font-weight: 500;
+  font-size: 1.08rem; color: var(--ink-dim); max-width: 33rem; margin-bottom: 2rem;
+  font-weight: 400;
 }
 .hero__cta { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
 .hero__proof {
