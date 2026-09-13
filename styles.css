@@ -368,17 +368,18 @@ html.is-ios .portrait { cursor: default; }
 
 /* ---------- Benchmark table ---------- */
 .table-wrap { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: var(--radius); }
-.bench { width: 100%; border-collapse: collapse; min-width: 760px; }
+.bench { width: 100%; border-collapse: collapse; min-width: 920px; }
 .bench th, .bench td {
   text-align: left; padding: 1rem 1.15rem; font-size: .9rem;
   border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
 }
 .bench thead th {
   font-weight: 500; color: var(--ink-dim); font-size: .82rem;
   background: var(--bg-soft); vertical-align: bottom;
 }
 .bench thead th small { color: var(--ink-faint); font-weight: 400; }
-.bench tbody td:first-child { color: var(--ink); font-weight: 500; }
+.bench tbody td:first-child { color: var(--ink); font-weight: 500; white-space: nowrap; }
 .bench td { color: var(--ink-dim); }
 .bench__hl { background: rgba(255,255,255,.045); color: var(--ink) !important; font-weight: 500; }
 .bench thead .bench__hl { background: rgba(255,255,255,.08); color: var(--ink); font-weight: 600; }
