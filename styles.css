@@ -263,6 +263,10 @@ html.is-ios .portrait { cursor: default; }
   display: block; object-fit: cover;
   pointer-events: none;
 }
+/* iOS draws a play button on a paused showreel. pointer-events: none made
+   that button untappable. Allow taps until playback has started. */
+html.is-ios .product-window__video { pointer-events: auto; }
+html.is-ios .product-window__video.is-playing { pointer-events: none; }
 
 /* ===================== KPIs ===================== */
 .kpis {

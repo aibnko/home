@@ -20,7 +20,9 @@
      rejected. IntersectionObserver is not a user gesture, and pausing
      a below-the-fold portrait after a brief autoplay lifted the overlay
      onto a black unpainted canvas. The poster overlay stays up until a
-     decoded playing frame exists; the product loop waits for a gesture. */
+     decoded playing frame exists. The showreel stays paused until the first
+     touch so the portrait keeps that slot, then play() is retried from
+     loadeddata, tab visibility, and when the product window is on screen. */
   function isIOS() {
     const ua = navigator.userAgent || "";
     if (/iPad|iPhone|iPod/.test(ua)) return true;
@@ -47,6 +49,63 @@
   const overlay = document.getElementById("scrubPoster");
   const heroLoop = document.getElementById("heroLoop");
   let iosGestureUnlocked = false;
+  let tryPlayHero = function () {};
+
+  /* Showreel: muted, inline, looping. On iOS the portrait owns the single
+     muted-autoplay slot (the inline script already paused this element).
+     After the first touch, play() runs here and again on loadeddata,
+     visibility, and scroll-into-view. */
+  function bindHeroLoop() {
+    if (!heroLoop) return;
+    heroLoop.muted = true;
+    heroLoop.defaultMuted = true;
+    heroLoop.setAttribute("muted", "");
+    heroLoop.playsInline = true;
+    heroLoop.setAttribute("playsinline", "");
+    heroLoop.setAttribute("webkit-playsinline", "");
+    heroLoop.loop = true;
+    heroLoop.setAttribute("loop", "");
+
+    tryPlayHero = function () {
+      if (prefersReduced) {
+        heroLoop.pause();
+        heroLoop.classList.remove("is-playing");
+        return;
+      }
+      if (onIOS && !iosGestureUnlocked) return;
+      const playPromise = heroLoop.play();
+      if (playPromise && typeof playPromise.then === "function") {
+        playPromise.then(function () {
+          heroLoop.classList.add("is-playing");
+        }).catch(function () {
+          if (heroLoop.paused) heroLoop.classList.remove("is-playing");
+        });
+      }
+    };
+
+    heroLoop.addEventListener("playing", function () {
+      heroLoop.classList.add("is-playing");
+    });
+    heroLoop.addEventListener("pause", function () {
+      if (!prefersReduced) heroLoop.classList.remove("is-playing");
+    });
+    heroLoop.addEventListener("loadeddata", tryPlayHero);
+    heroLoop.addEventListener("canplay", tryPlayHero);
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) tryPlayHero();
+    });
+    if ("IntersectionObserver" in window) {
+      const product = heroLoop.closest(".hero__product") || heroLoop;
+      const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) tryPlayHero();
+        });
+      }, { threshold: 0.15, rootMargin: "80px 0px" });
+      io.observe(product);
+    }
+    tryPlayHero();
+  }
+  bindHeroLoop();
 
   if (video && onIOS) {
     const hint = document.getElementById("scrubHint");
@@ -109,21 +168,12 @@
     }
 
     function tryPlayHeroAfterGesture() {
-      if (!heroLoop || prefersReduced || !iosGestureUnlocked) return;
-      if (portrait) {
-        const r = portrait.getBoundingClientRect();
-        const visibleH = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
-        if (r.height > 0 && visibleH / r.height > 0.25) {
-          tryPlayPortrait();
-          return;
-        }
-      }
-      heroLoop.muted = true;
-      heroLoop.defaultMuted = true;
-      const playPromise = heroLoop.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(function () {});
-      }
+      if (prefersReduced || !iosGestureUnlocked) return;
+      // Keep the portrait playing, and always start the showreel too.
+      // The old gate bailed while the portrait was still 25% visible, which
+      // is the normal iPhone layout: the showreel sits directly under it.
+      tryPlayPortrait();
+      tryPlayHero();
     }
 
     function onUnlock() {
@@ -131,6 +181,9 @@
       iosGestureUnlocked = true;
       tryPlayPortrait();
       tryPlayHeroAfterGesture();
+      // A silent muted showreel can start on a later turn if the portrait
+      // took this gesture's only play() call.
+      setTimeout(tryPlayHero, 60);
     }
 
     if (prefersReduced) {
@@ -245,37 +298,6 @@
         });
       }, { rootMargin: "200px" });
       io.observe(portrait);
-    }
-  }
-
-  /* ---------- 1b. PRODUCT DEMO LOOP ---------- */
-  if (heroLoop) {
-    heroLoop.muted = true;
-    heroLoop.defaultMuted = true;
-    heroLoop.playsInline = true;
-    const tryPlayHero = () => {
-      if (prefersReduced) {
-        heroLoop.pause();
-        return;
-      }
-      if (onIOS) {
-        // iOS muted-autoplay is a single slot. The portrait claims it.
-        // After a tap/touch, onUnlock() starts the product loop.
-        heroLoop.removeAttribute("autoplay");
-        heroLoop.autoplay = false;
-        return;
-      }
-      const playPromise = heroLoop.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {});
-      }
-    };
-    tryPlayHero();
-    if (!onIOS) {
-      heroLoop.addEventListener("canplay", tryPlayHero, { once: true });
-      document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) tryPlayHero();
-      });
     }
   }
 

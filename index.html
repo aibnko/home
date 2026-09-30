@@ -70,7 +70,7 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=17" />
+  <link rel="stylesheet" href="styles.css?v=18" />
 </head>
 <body>
   <!-- ================= NAV ================= -->
@@ -170,7 +170,7 @@
             <video
               id="heroLoop"
               class="product-window__video"
-              src="aibnko-showreel.mp4?v=1"
+              src="aibnko-showreel.mp4?v=2"
               poster="aibnko-showreel-poster.jpg?v=1"
               autoplay
               muted
@@ -185,6 +185,16 @@
               (function () {
                 var v = document.getElementById("heroLoop");
                 if (!v || !document.documentElement.classList.contains("is-ios")) return;
+                v.muted = true;
+                v.defaultMuted = true;
+                v.setAttribute("muted", "");
+                v.setAttribute("playsinline", "");
+                v.setAttribute("webkit-playsinline", "");
+                v.playsInline = true;
+                v.loop = true;
+                v.setAttribute("loop", "");
+                // Portrait keeps the single muted-autoplay slot. script.js
+                // starts this showreel on the first touch.
                 v.removeAttribute("autoplay");
                 v.autoplay = false;
                 try { v.pause(); } catch (e) {}
@@ -452,7 +462,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=9"></script>
+  <script src="script.js?v=10"></script>
   <script src="analytics.js"></script>
 </body>
 </html>
